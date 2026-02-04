@@ -1,0 +1,113 @@
+body {
+    padding-top: 70px;
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+.content-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.content-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+}
+
+.stat-card.primary {
+    border-color: #0d6efd;
+}
+
+.stat-card.success {
+    border-color: #198754;
+}
+
+.stat-card.warning {
+    border-color: #ffc107;
+}
+
+.stat-card.danger {
+    border-color: #dc3545;
+}
+
+.scan-area {
+    border: 3px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 60px 20px;
+    text-align: center;
+    background-color: #fff;
+    transition: all 0.3s;
+}
+
+.scan-area:hover {
+    border-color: #0d6efd;
+    background-color: #f8f9ff;
+}
+
+.scan-icon {
+    font-size: 80px;
+    color: #6c757d;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+}
+
+.nav-link {
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+}
+
+.form-section {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+}
+
+.recent-activity {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    border-left: 3px solid #e9ecef;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+.activity-item.present {
+    border-left-color: #198754;
+}
+
+.activity-item.absent {
+    border-left-color: #dc3545;
+}

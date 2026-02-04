@@ -38,11 +38,9 @@ $self = WEB_ROOT . 'index.php';
 
     <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . $webRoot . '/include/preload.php'); ?>
 
-    <div class="left-menu">
-        <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . $webRoot . '/include/left-menu.php'); ?>
-    </div>
+    <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . $webRoot . '/include/header.php'); ?>
 
-    <main class="content">
+    <main class="content container-fluid">
 
         <?php require_once $content; ?>
 
