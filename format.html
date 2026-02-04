@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+        
+        .stat-card.primary { border-color: #0d6efd; }
+        .stat-card.success { border-color: #198754; }
+        .stat-card.warning { border-color: #ffc107; }
+        .stat-card.danger { border-color: #dc3545; }
+        
+        .scan-area {
+            border: 3px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+        
+        .scan-area:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9ff;
+        }
+        
+        .scan-icon {
+            font-size: 80px;
+            color: #6c757d;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f5;
+            cursor: pointer;
+        }
+        
+        .nav-link {
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+        
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            border-left: 3px solid #e9ecef;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .activity-item.present {
+            border-left-color: #198754;
+        }
+        
+        .activity-item.absent {
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="bi bi-clipboard-check"></i> Attendance Monitor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('scan')">
+                            <i class="bi bi-qr-code-scan"></i> Scan Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('register-coach')">
+                            <i class="bi bi-person-badge"></i> Register Coach
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('register-athlete')">
+                            <i class="bi bi-person-plus"></i> Register Athletes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard Overview</h2>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Total Athletes</h6>
+                                    <h2 class="mb-0">156</h2>
+                                </div>
+                                <div class="text-primary">
+                                    <i class="bi bi-people-fill" style="font-size: 3rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Present Today</h6>
+                                    <h2 class="mb-0">142</h2>
+                                </div>
+                                <div class="text-success">
+                                    <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Absent Today</h6>
+                                    <h2 class="mb-0">14</h2>
+                                </div>
+                                <div class="text-warning">
+                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card danger">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Total Coaches</h6>
+                                    <h2 class="mb-0">12</h2>
+                                </div>
+                                <div class="text-danger">
+                                    <i class="bi bi-person-badge-fill" style="font-size: 3rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Recent Attendance -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Attendance</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentAttendanceTable">
+                                        <tr>
+                                            <td>ATH001</td>
+                                            <td>John Smith</td>
+                                            <td><span class="badge bg-info">Athlete</span></td>
+                                            <td>08:45 AM</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>ATH002</td>
+                                            <td>Sarah Johnson</td>
+                                            <td><span class="badge bg-info">Athlete</span></td>
+                                            <td>08:50 AM</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>COA001</td>
+                                            <td>Mike Williams</td>
+                                            <td><span class="badge bg-primary">Coach</span></td>
+                                            <td>08:30 AM</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>ATH003</td>
+                                            <td>Emily Davis</td>
+                                            <td><span class="badge bg-info">Athlete</span></td>
+                                            <td>09:00 AM</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>ATH004</td>
+                                            <td>James Brown</td>
+                                            <td><span class="badge bg-info">Athlete</span></td>
+                                            <td>09:15 AM</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats & Activity -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-graph-up"></i> Quick Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Attendance Rate</span>
+                                    <strong>91%</strong>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 91%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>On Time Rate</span>
+                                    <strong>85%</strong>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <h6 class="mb-3">Today's Activity</h6>
+                            <div class="recent-activity">
+                                <div class="activity-item present">
+                                    <small class="text-muted">2 minutes ago</small>
+                                    <p class="mb-0"><strong>John Smith</strong> checked in</p>
+                                </div>
+                                <div class="activity-item present">
+                                    <small class="text-muted">5 minutes ago</small>
+                                    <p class="mb-0"><strong>Sarah Johnson</strong> checked in</p>
+                                </div>
+                                <div class="activity-item present">
+                                    <small class="text-muted">12 minutes ago</small>
+                                    <p class="mb-0"><strong>Mike Williams</strong> checked in</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Attendance Section -->
+        <div id="scan" class="content-section">
+            <h2 class="mb-4"><i class="bi bi-qr-code-scan"></i> Scan Attendance</h2>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="scan-area" onclick="simulateScan()">
+                                <i class="bi bi-qr-code scan-icon"></i>
+                                <h4 class="mt-3">Tap to Scan QR Code</h4>
+                                <p class="text-muted">Click here to simulate scanning</p>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5>Manual Entry</h5>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="manualId" placeholder="Enter ID Number">
+                                    <button class="btn btn-primary" onclick="manualCheckIn()">
+                                        <i class="bi bi-check-circle"></i> Check In
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-list-check"></i> Scan History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="scanHistory" style="max-height: 400px; overflow-y: auto;">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> No scans yet. Start scanning to see history.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Coach Section -->
+        <div id="register-coach" class="content-section">
+            <h2 class="mb-4"><i class="bi bi-person-badge"></i> Register Coach</h2>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="form-section">
+                        <form id="coachForm" onsubmit="registerCoach(event)">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Specialization *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select Specialization</option>
+                                        <option>Basketball</option>
+                                        <option>Football</option>
+                                        <option>Swimming</option>
+                                        <option>Track & Field</option>
+                                        <option>Gymnastics</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Experience (Years) *</label>
+                                    <input type="number" class="form-control" min="0" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Certifications</label>
+                                <input type="text" class="form-control" placeholder="e.g., Level 2 Coaching Certificate">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control" accept="image/*">
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('coachForm').reset()">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Register Coach
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Athletes Section -->
+        <div id="register-athlete" class="content-section">
+            <h2 class="mb-4"><i class="bi bi-person-plus"></i> Register Athletes</h2>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="form-section">
+                        <form id="athleteForm" onsubmit="registerAthlete(event)">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Date of Birth *</label>
+                                    <input type="date" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select Gender</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Sport *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select Sport</option>
+                                        <option>Basketball</option>
+                                        <option>Football</option>
+                                        <option>Swimming</option>
+                                        <option>Track & Field</option>
+                                        <option>Gymnastics</option>
+                                        <option>Tennis</option>
+                                        <option>Volleyball</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Assigned Coach *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select Coach</option>
+                                        <option>Mike Williams</option>
+                                        <option>Lisa Anderson</option>
+                                        <option>David Martinez</option>
+                                        <option>Jennifer Lee</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Emergency Contact Name *</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Emergency Contact Phone *</label>
+                                    <input type="tel" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Relationship *</label>
+                                    <input type="text" class="form-control" placeholder="e.g., Parent, Guardian" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Medical Conditions / Notes</label>
+                                <textarea class="form-control" rows="2" placeholder="Any allergies, medical conditions, or special notes"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control" accept="image/*">
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('athleteForm').reset()">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Register Athlete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navigation function
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+        }
+
+        // Simulate QR code scan
+        function simulateScan() {
+            const names = ['John Smith', 'Sarah Johnson', 'Mike Williams', 'Emily Davis', 'James Brown', 'Lisa Anderson'];
+            const ids = ['ATH001', 'ATH002', 'COA001', 'ATH003', 'ATH004', 'COA002'];
+            const types = ['Athlete', 'Athlete', 'Coach', 'Athlete', 'Athlete', 'Coach'];
+            
+            const randomIndex = Math.floor(Math.random() * names.length);
+            const name = names[randomIndex];
+            const id = ids[randomIndex];
+            const type = types[randomIndex];
+            const time = new Date().toLocaleTimeString();
+            
+            addScanHistory(id, name, type, time);
+            
+            // Show success message
+            const scanArea = document.querySelector('.scan-area');
+            const originalContent = scanArea.innerHTML;
+            scanArea.innerHTML = `
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+                <h4 class="mt-3 text-success">Check-in Successful!</h4>
+                <p><strong>${name}</strong> (${id})</p>
+            `;
+            scanArea.style.borderColor = '#198754';
+            scanArea.style.backgroundColor = '#d1e7dd';
+            
+            setTimeout(() => {
+                scanArea.innerHTML = originalContent;
+                scanArea.style.borderColor = '#dee2e6';
+                scanArea.style.backgroundColor = '#fff';
+            }, 2000);
+        }
+
+        // Manual check-in
+        function manualCheckIn() {
+            const idInput = document.getElementById('manualId');
+            const id = idInput.value.trim();
+            
+            if (!id) {
+                alert('Please enter an ID number');
+                return;
+            }
+            
+            const time = new Date().toLocaleTimeString();
+            addScanHistory(id, 'Manual Entry', 'Athlete', time);
+            
+            idInput.value = '';
+            alert('Check-in successful!');
+        }
+
+        // Add scan to history
+        function addScanHistory(id, name, type, time) {
+            const scanHistory = document.getElementById('scanHistory');
+            
+            // Remove "no scans" message if exists
+            if (scanHistory.querySelector('.alert-info')) {
+                scanHistory.innerHTML = '';
+            }
+            
+            const badge = type === 'Coach' ? 'bg-primary' : 'bg-info';
+            
+            const historyItem = document.createElement('div');
+            historyItem.className = 'border-bottom pb-3 mb-3';
+            historyItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">${name}</h6>
+                        <small class="text-muted">${id} • <span class="badge ${badge}">${type}</span></small>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">${time}</small><br>
+                        <span class="badge bg-success">Present</span>
+                    </div>
+                </div>
+            `;
+            
+            scanHistory.insertBefore(historyItem, scanHistory.firstChild);
+        }
+
+        // Register coach form submission
+        function registerCoach(event) {
+            event.preventDefault();
+            alert('Coach registered successfully!');
+            document.getElementById('coachForm').reset();
+        }
+
+        // Register athlete form submission
+        function registerAthlete(event) {
+            event.preventDefault();
+            alert('Athlete registered successfully!');
+            document.getElementById('athleteForm').reset();
+        }
+    </script>
+</body>
+</html>
