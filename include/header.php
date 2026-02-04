@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showSection('register-athlete')">
+                    <a class="nav-link" href="<?= WEB_ROOT; ?>athletes/" onclick="showSection('register-athlete')">
                         <i class="bi bi-person-plus"></i> Register Athletes
                     </a>
                 </li>
